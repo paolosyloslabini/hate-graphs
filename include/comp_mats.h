@@ -27,7 +27,7 @@ intT insert_sorted(std::vector<T>& vec, T const& item)
 
 bool filter(DataT weight, DataT total_weight, intT degree, const DataT alpha)
 {
-    DataT p = std::pow(1. - (weight / total_weight)), (degree - 1));
+    DataT p = std::pow(1. - (weight / total_weight), (degree - 1));
     return p < alpha;
 }
 
