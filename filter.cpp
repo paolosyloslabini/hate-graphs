@@ -47,6 +47,6 @@ int main(int argc, char* argv[])
 
     CSR cmat;
     cmat.read_edgelist(infile);
-    cmat.save_to_edgelist(infile);
+    cmat.save_to_edgelist(outfile);
 
 }
