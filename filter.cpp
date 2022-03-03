@@ -23,6 +23,8 @@ int main(int argc, char* argv[])
 
     string infile;
     string outfile = "test_output.txt";
+    DataT alpha = 0.1;
+
 
     //terminal options loop
     opterr = 0;
@@ -30,6 +32,10 @@ int main(int argc, char* argv[])
     while ((c = getopt(argc, argv, "f:o")) != -1)
         switch (c)
         {
+        case 'a':// select filter alpha
+            infile = stof(optarg);
+            break;
+
         case 'f':// select input file
             infile = optarg;
             break;
@@ -47,7 +53,7 @@ int main(int argc, char* argv[])
 
     CSR cmat;
     cmat.read_edgelist(infile);
-    disparity_filter(cmat, 0.2);
+    disparity_filter(cmat, alpha);
     cmat.save_to_edgelist(outfile);
 
 }
