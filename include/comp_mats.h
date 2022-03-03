@@ -9,6 +9,7 @@ typedef long int intT;
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <math.h>       /* pow */
 
 
 
@@ -48,10 +49,11 @@ struct CSR {
 
     intT add_element(intT row, intT col, DataT val = 1)
     {
+        //inefficient. Use binary search?
         if (row >= rows() || col >= rows()) return 1;
 
 
-        bool exists = std::find(std::begin(ja[row], std::end(ja[row]), col) != std::end(ja[row]);
+        bool exists = std::find(ja[row].begin(), ja[row].end(), col) != std::end(ja[row]);
         if (exists) return 1;
 
         auto pos = std::upper_bound(ja[row].begin(), ja[row].end(), col) - ja[row].begin(); //find the insert position
@@ -127,7 +129,7 @@ struct CSR {
     bool edge_exists(intT row, intT col)
     {
         //inefficient. Use binary search;
-        return (this->ja[row].find(col) != this->ja[row].end());
+        return std::find(ja[row].begin(), ja[row].end(), col) != ja[row].end());
     }
 
     int symmetrize_add()
@@ -136,7 +138,7 @@ struct CSR {
         {
             auto ja = this->ja[row];
             auto ma = this->ma[row];
-            intT degree = this->nzcount(i);
+            intT degree = this->nzcount(row);
             for (intT nz = 0; nz < degree; nz++)
             {
                 intT col = ja[nz];
@@ -192,7 +194,7 @@ struct CSR {
                 outfile << row << delimiter << col << delimiter << weight << std::endl;
             }
         }
-        outfile.close()
+        outfile.close();
     }
 };
 

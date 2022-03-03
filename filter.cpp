@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 {
 
     string infile;
-    string outfile = "test_output.txt"
+    string outfile = "test_output.txt";
 
     //terminal options loop
     opterr = 0;
