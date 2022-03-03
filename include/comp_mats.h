@@ -129,7 +129,7 @@ struct CSR {
     bool edge_exists(intT row, intT col)
     {
         //inefficient. Use binary search;
-        return std::find(ja[row].begin(), ja[row].end(), col) != ja[row].end());
+        return std::find(ja[row].begin(), ja[row].end(), col) != ja[row].end();
     }
 
     int symmetrize_add()
@@ -195,6 +195,7 @@ struct CSR {
             }
         }
         outfile.close();
+        return 0;
     }
 };
 
@@ -239,4 +240,6 @@ int disparity_filter(CSR& cmat, DataT alpha)
             ma.erase(remove(ma.begin(), ma.end(), -1), ma.end());
         }
     }
+
+    return 0;
 }
