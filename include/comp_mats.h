@@ -26,7 +26,7 @@ intT insert_sorted(std::vector<T>& vec, T const& item)
 
 bool filter(DataT weight, DataT total_weight, intT degree, const DataT alpha)
 {
-    DataT p = (1. - (weight / total_weight)) ^ (degree - 1);
+    DataT p = std::(pow(1. - (weight / total_weight)), (degree - 1));
     return p < alpha;
 }
 
@@ -51,7 +51,7 @@ struct CSR {
         if (row >= rows() || col >= rows()) return 1;
 
 
-        bool exists = std::find(std::begin(ja[row), std::end(ja[row]), col) != std::end(ja[row]);
+        bool exists = std::find(std::begin(ja[row], std::end(ja[row]), col) != std::end(ja[row]);
         if (exists) return 1;
 
         auto pos = std::upper_bound(ja[row].begin(), ja[row].end(), col) - ja[row].begin(); //find the insert position
@@ -134,8 +134,8 @@ struct CSR {
     {
         for (intT row = 0; row < rows(); row++)
         {
-            auto ja = this->ja[i];
-            auto ma = this->ma[i];
+            auto ja = this->ja[row];
+            auto ma = this->ma[row];
             intT degree = this->nzcount(i);
             for (intT nz = 0; nz < degree; nz++)
             {
@@ -178,7 +178,7 @@ struct CSR {
         return 0;
     }
 
-    int save_to_edgelist(string filename, string delimiter = " ")
+    int save_to_edgelist(string filename, std::string delimiter = " ")
     {
         std::ofstream outfile(filename);
         for (intT row = 0; row < rows(); row++)
