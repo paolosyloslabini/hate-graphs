@@ -38,7 +38,7 @@ struct CSR {
 
     intT rows()
     {
-        return ja.size()
+        return ja.size();
     }
 
     intT nzcount(intT row)
@@ -48,9 +48,8 @@ struct CSR {
 
     intT add_element(intT row, intT col, DataT val = 1)
     {
-        if (row >= rows || col >= rows) return 1;
+        if (row >= rows() || col >= rows()) return 1;
 
-        nzcol[row] += 1;
 
         bool exists = std::find(std::begin(ja[row), std::end(ja[row]), col) != std::end(ja[row]);
         if (exists) return 1;
@@ -95,7 +94,7 @@ struct CSR {
 
             //find node value
             DataT weight = 1.0;
-            if weighted
+            if(weighted)
             {
                 //find weight value
                 del_pos = temp.find(delimiter);
