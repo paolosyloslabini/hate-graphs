@@ -3,10 +3,13 @@ typedef float DataT; //precision for matrix entries
 typedef long int intT;
 
 #include <algorithm>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <vector>
+
 
 
 template< typename T >
@@ -20,6 +23,8 @@ intT insert_sorted(std::vector<T>& vec, T const& item)
     );
     return pos - vec.begin();
 }
+
+
 
 int disparity_filter(CSR& cmat, DataT alpha)
 {
@@ -56,8 +61,8 @@ int disparity_filter(CSR& cmat, DataT alpha)
             }
 
             //remove flagged elements. Keep order;
-            v.erase(remove(ja.begin(), ja.end(), -1), ja.end());
-            v.erase(remove(ma.begin(), ma.end(), -1), ma.end());
+            ja.erase(remove(ja.begin(), ja.end(), -1), ja.end());
+            ma.erase(remove(ma.begin(), ma.end(), -1), ma.end());
         }
     }
 }
@@ -68,8 +73,6 @@ bool filter(DataT weight, DataT total_weight, intT degree, const DataT alpha)
     return p < alpha;
 }
 
-
-
 struct CSR {
 
     std::vector<std::vector<intT>> ja;    /* pointer-to-pointer to store column (row) indices      */
@@ -78,7 +81,7 @@ struct CSR {
 
     intT rows()
     {
-        return ja.size();
+        return ja.size()
     }
 
     intT nzcount(intT row)
@@ -88,9 +91,11 @@ struct CSR {
 
     intT add_element(intT row, intT col, DataT val = 1)
     {
-        if (row >= rows() || col >= rows()) return 1;
+        if (row >= rows || col >= rows) return 1;
 
-        bool exists = std::find(std::begin(ja[row], std::end(ja[row]), col) != std::end(ja[row]);
+        nzcol[row] += 1;
+
+        bool exists = std::find(std::begin(ja[row), std::end(ja[row]), col) != std::end(ja[row]);
         if (exists) return 1;
 
         auto pos = std::upper_bound(ja[row].begin(), ja[row].end(), col) - ja[row].begin(); //find the insert position
@@ -102,7 +107,7 @@ struct CSR {
         }
     }
 
-    int read_edgelist(std::string filename, int cmat_fmt, std::string delimiter = " ", bool weighted = false)
+    int read_edgelist(std::string filename, std::string delimiter = " ", bool weighted = false)
     {
         std::ifstream infile;
 
@@ -133,7 +138,7 @@ struct CSR {
 
             //find node value
             DataT weight = 1.0;
-            if (weighted)
+            if weighted
             {
                 //find weight value
                 del_pos = temp.find(delimiter);
@@ -166,7 +171,7 @@ struct CSR {
     bool edge_exists(intT row, intT col)
     {
         //inefficient. Use binary search;
-        return (this->ja[row].find(col) != this->ja[row].end());
+        return (this->ja[row].find(col) != this->ja[row].end())
     }
 
     int symmetrize_add()
@@ -217,7 +222,7 @@ struct CSR {
         return 0;
     }
 
-    int save_to_edgelist(string filename, string delimiter = " ", bool weighted = true)
+    int save_to_edgelist(string filename, string delimiter = " ")
     {
         std::ofstream outfile(filename);
         for (intT row = 0; row < rows(); row++)
@@ -228,11 +233,9 @@ struct CSR {
             {
                 intT col = ja[nz];
                 DataT weight = ma[nz];
-                outfile << row << delimiter << col;
-                if (weighted) outfile << delimiter << weight;
-                outfile << std::endl;
+                outfile << row << delimiter << col << delimiter << weight << std::endl;
             }
         }
-        outfile.close();
+        outfile.close()
     }
 };
