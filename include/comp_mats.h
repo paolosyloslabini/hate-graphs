@@ -249,6 +249,19 @@ int disparity_filter(CSR& cmat, DataT alpha)
 }
 
 
+int save_map(std::map<std::string, intT> map, std::string outfile, std::string delimiter = " ")
+{
+    std::ofstream outfile;
+    for (it = map.begin(); it != map.end(); it++)
+    {
+        std::cout << it->first    // string (key)
+            << delimiter
+            << it->second   // string's value 
+            << std::endl;
+    }
+}
+
+
 int renumber_bipartite(std::string infile, std::string outfile, std::string mapping1, std::string mapping2)
 {
 
@@ -305,22 +318,11 @@ int renumber_bipartite(std::string infile, std::string outfile, std::string mapp
 }
 
 
-int save_map(std::map<std::string, intT> map, std::string outfile, std::string delimiter = " ")
-{
-    std::ofstream outfile;
-    for (it = map.begin(); it != map.end(); it++)
-    {
-        std::cout << it->first    // string (key)
-            << delimiter
-            << it->second   // string's value 
-            << std::endl;
-    }
-}
 
 int bipartite_to_weighted(std::string infile, std::string outfile)
 {
     std::ifstream infile;
-    std::map< std::string, std::vector<std::string> > my_map;
+    std::map< intT, intT > my_map;
     std::string temp;
 
 
