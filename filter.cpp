@@ -47,6 +47,7 @@ int main(int argc, char* argv[])
 
     CSR cmat;
     cmat.read_edgelist(infile);
+    disparity_filter(cmat, 0.2);
     cmat.save_to_edgelist(outfile);
 
 }
