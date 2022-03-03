@@ -10,6 +10,7 @@ typedef long int intT;
 #include <fstream>
 #include <vector>
 #include <math.h>       /* pow */
+#include <map>
 
 
 
@@ -223,7 +224,7 @@ int disparity_filter(CSR& cmat, DataT alpha)
     for (intT row = 0; row < cmat.rows(); row++)
     {
         intT degree = cmat.nzcount(row);
-        auto weight_sum = weight_sums[row];
+        DataT weight_sum = weight_sums[row];
         auto ja = cmat.ja[row];
         auto ma = cmat.ma[row];
 
@@ -245,4 +246,117 @@ int disparity_filter(CSR& cmat, DataT alpha)
     }
 
     return 0;
+}
+
+
+int renumber_bipartite(std::string infile, std::string outfile, std::string mapping1, std::string mapping2)
+{
+
+    //TODO
+    std::ifstream infile;
+    std::ofstream outfile;
+    intT i = 0;
+    intT j = 0;
+    out_delimiter = " ";
+
+    std::map< std::string, intT > in_map;
+    std::map< std::string, intT > out_map;
+
+    infile.open(filename);
+    infile.ignore(2048, '\n');     //ignore first line
+
+    std::string temp;
+    while (getline(infile, temp))
+    {
+        int del_pos = temp.find(",");
+        int del_size = delimiter.length();
+
+        //find parent node
+        std::string first_node_string = temp.substr(0, del_pos); //retrieve the part of the string before the delimiter
+        current_node = stoi(first_node_string);
+        temp.erase(0, del_pos + del_size);
+
+        //find child node
+        del_pos = temp.find(",");
+        std::string second_node_string = temp.substr(0, del_pos); //retrieve the part of the string after the delimiter
+        intT child = stoi(second_node_string);
+
+        auto it = in_map.find(parent);
+        if (it == in_map.end())
+        {
+            in_map[parent] = i;
+            i++
+        }
+
+        auto it = out_map.find(child);
+        if (it == in_map.end())
+        {
+            out_map[child] = j;
+            j++
+        }
+
+        outfile << in_map[parent] << out_delimiter << in_map[child] << out_delimiter << std::endl;
+    }
+
+    save_map(in_map, mapping1);
+    save_map(out_map, mapping2);
+
+    return 0;
+}
+
+
+int save_map(std::map<std::string, intT> map, std::string outfile, std::string delimiter = " ")
+{
+    std::ofstream outfile;
+    for (it = map.begin(); it != map.end(); it++)
+    {
+        std::cout << it->first    // string (key)
+            << delimiter
+            << it->second   // string's value 
+            << std::endl;
+    }
+}
+
+int bipartite_to_weighted(std::string infile, std::string outfile)
+{
+    std::ifstream infile;
+    std::map< std::string, std::vector<std::string> > my_map;
+    std::string temp;
+
+
+    infile.open(filename);
+    infile.ignore(2048, '\n');
+    while (getline(infile, temp)) 
+    {
+        int del_pos = temp.find(",");
+        int del_size = delimiter.length();
+
+        //find parent node
+        std::string first_node_string = temp.substr(0, del_pos); //retrieve the part of the string before the delimiter
+        current_node = stoi(first_node_string);
+        temp.erase(0, del_pos + del_size);
+
+        //find child node
+        del_pos = temp.find(",");
+        std::string second_node_string = temp.substr(0, del_pos); //retrieve the part of the string after the delimiter
+        intT child = stoi(second_node_string);
+        temp.erase(0, del_pos + del_size);
+
+        auto it = my_map.find(child);
+        if (it != my_map.end())
+        {
+            my_map[child].push_back(parent);
+        }
+        else
+        {
+            my_map[child] = std::vector<std::string>();
+            my_map[child].push_back(parent);
+        }
+    }
+
+    for (intT i = 0; i < my_map.size(); i++)
+    {
+
+    }
+
 }
