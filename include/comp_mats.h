@@ -26,7 +26,7 @@ intT insert_sorted(std::vector<T>& vec, T const& item)
 
 bool filter(DataT weight, DataT total_weight, intT degree, const DataT alpha)
 {
-    DataT p = std::(pow(1. - (weight / total_weight)), (degree - 1));
+    DataT p = std::pow(1. - (weight / total_weight)), (degree - 1));
     return p < alpha;
 }
 
@@ -55,7 +55,7 @@ struct CSR {
         if (exists) return 1;
 
         auto pos = std::upper_bound(ja[row].begin(), ja[row].end(), col) - ja[row].begin(); //find the insert position
-        ja[row].insert(ja.[row].begin + pos, col);
+        ja[row].insert(ja[row].begin() + pos, col);
 
         if (weighted)
         {
@@ -127,7 +127,7 @@ struct CSR {
     bool edge_exists(intT row, intT col)
     {
         //inefficient. Use binary search;
-        return (this->ja[row].find(col) != this->ja[row].end())
+        return (this->ja[row].find(col) != this->ja[row].end());
     }
 
     int symmetrize_add()
@@ -178,7 +178,7 @@ struct CSR {
         return 0;
     }
 
-    int save_to_edgelist(string filename, std::string delimiter = " ")
+    int save_to_edgelist(std::string filename, std::string delimiter = " ")
     {
         std::ofstream outfile(filename);
         for (intT row = 0; row < rows(); row++)
