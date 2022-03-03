@@ -9,15 +9,76 @@ typedef long int intT;
 #include <vector>
 
 
+template< typename T >
+intT insert_sorted(std::vector<T>& vec, T const& item)
+{
+    auto pos = std::upper_bound(vec.begin(), vec.end(), item);
+    vec.insert
+    (
+        pos,
+        item
+    );
+    return pos - vec.begin();
+}
+
+int disparity_filter(CSR& cmat, DataT alpha)
+{
+    //NON negative weights only
+
+    //GENERATE THE VECTOR OF SUMS
+    std::vector<DataT> weight_sums(cmat.rows(), 0.0);
+    for (intT i = 0; i < cmat.rows(); i++)
+    {
+        for (auto w : cmat.ma[i])
+        {
+            weight_sums[i] += w;
+        }
+    }
+
+
+    //APPLY FILTER
+    for (intT row = 0; row < cmat.rows(); row++)
+    {
+        intT degree = cmat.nzcount(row);
+        auto weight_sum = weight_sums[row];
+        auto ja = cmat.ja[row];
+        auto ma = cmat.ma[row];
+
+        for (intT nz = 0; nz < degree; nz++)
+        {
+
+            DataT weight = ma[nz];
+            if (filter(weight, weight_sum, degree, alpha))
+            {
+                //flag elements for removal
+                ja[nz] = -1;
+                ma[nz] = -1;
+            }
+
+            //remove flagged elements. Keep order;
+            v.erase(remove(ja.begin(), ja.end(), -1), ja.end());
+            v.erase(remove(ma.begin(), ma.end(), -1), ma.end());
+        }
+    }
+}
+
+bool filter(DataT weight, DataT total_weight, intT degree, const DataT alpha)
+{
+    DataT p = (1. - (weight / total_weight)) ^ (degree - 1);
+    return p < alpha;
+}
+
+
 
 struct CSR {
 
     std::vector<std::vector<intT>> ja;    /* pointer-to-pointer to store column (row) indices      */
     std::vector<std::vector<DataT>> ma;   /* pointer-to-pointer to store nonzero entries           */
+    bool weighted;
 
     intT rows()
     {
-        return ja.size()
+        return ja.size();
     }
 
     intT nzcount(intT row)
@@ -27,11 +88,9 @@ struct CSR {
 
     intT add_element(intT row, intT col, DataT val = 1)
     {
-        if (row >= rows || col >= rows) return 1;
+        if (row >= rows() || col >= rows()) return 1;
 
-        nzcol[row] += 1;
-
-        bool exists = std::find(std::begin(ja[row), std::end(ja[row]), col) != std::end(ja[row]);
+        bool exists = std::find(std::begin(ja[row], std::end(ja[row]), col) != std::end(ja[row]);
         if (exists) return 1;
 
         auto pos = std::upper_bound(ja[row].begin(), ja[row].end(), col) - ja[row].begin(); //find the insert position
@@ -74,7 +133,7 @@ struct CSR {
 
             //find node value
             DataT weight = 1.0;
-            if weighted
+            if (weighted)
             {
                 //find weight value
                 del_pos = temp.find(delimiter);
@@ -107,7 +166,7 @@ struct CSR {
     bool edge_exists(intT row, intT col)
     {
         //inefficient. Use binary search;
-        return (this->ja[row].find(col) != this->ja[row].end())
+        return (this->ja[row].find(col) != this->ja[row].end());
     }
 
     int symmetrize_add()
@@ -152,8 +211,8 @@ struct CSR {
                 }
             }
             //remove flagged elements. Keep order;
-            v.erase(remove(ja.begin(), ja.end(), -1), ja.end());
-            v.erase(remove(ma.begin(), ma.end(), -1), ma.end());
+            ja.erase(remove(ja.begin(), ja.end(), -1), ja.end());
+            ma.erase(remove(ma.begin(), ma.end(), -1), ma.end());
         }
         return 0;
     }
@@ -171,70 +230,9 @@ struct CSR {
                 DataT weight = ma[nz];
                 outfile << row << delimiter << col;
                 if (weighted) outfile << delimiter << weight;
-                outfile << endl;
+                outfile << std::endl;
             }
         }
-        outfile.close()
+        outfile.close();
     }
 };
-
-template< typename T >
-intT insert_sorted(std::vector<T>& vec, T const& item)
-{
-    auto pos = std::upper_bound(vec.begin(), vec.end(), item);
-    vec.insert
-    (
-        pos,
-        item
-    );
-    return pos - vec.begin();
-}
-
-
-
-int disparity_filter(CSR& cmat, DataT alpha)
-{
-    //NON negative weights only
-
-    //GENERATE THE VECTOR OF SUMS
-    std::vector<DataT> weight_sums(cmat.rows(), 0.0);
-    for (intT i = 0; i < cmat.rows(); i++)
-    {
-        for (auto w : cmat.ma[i])
-        {
-            weight_sums[i] += w;
-        }
-    }
-
-
-    //APPLY FILTER
-    for (intT row = 0; row < cmat.rows(); row++)
-    {
-        intT degree = cmat.nzcount(row);
-        auto weight_sum = weight_sums[row];
-        auto ja = cmat.ja[row];
-        auto ma = cmat.ma[row];
-
-        for (intT nz = 0; nz < degree; nz++)
-        {            
-
-            DataT weight = ma[nz];
-            if (filter(weight, weight_sum, degree, alpha))
-            {
-                //flag elements for removal
-                ja[nz] = -1; 
-                ma[nz] = -1;
-            }
-
-            //remove flagged elements. Keep order;
-            v.erase(remove(ja.begin(), ja.end(), -1), ja.end());
-            v.erase(remove(ma.begin(), ma.end(), -1), ma.end());
-        }
-    }
-}
-
-bool filter(DataT weight, DataT total_weight, intT degree, const DataT alpha)
-{
-    p = (1. - (weight / total_weight))^(degree - 1);
-    return p < alpha;
-}
