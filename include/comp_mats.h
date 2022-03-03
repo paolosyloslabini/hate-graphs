@@ -24,49 +24,6 @@ intT insert_sorted(std::vector<T>& vec, T const& item)
     return pos - vec.begin();
 }
 
-
-
-int disparity_filter(CSR& cmat, DataT alpha)
-{
-    //NON negative weights only
-
-    //GENERATE THE VECTOR OF SUMS
-    std::vector<DataT> weight_sums(cmat.rows(), 0.0);
-    for (intT i = 0; i < cmat.rows(); i++)
-    {
-        for (auto w : cmat.ma[i])
-        {
-            weight_sums[i] += w;
-        }
-    }
-
-
-    //APPLY FILTER
-    for (intT row = 0; row < cmat.rows(); row++)
-    {
-        intT degree = cmat.nzcount(row);
-        auto weight_sum = weight_sums[row];
-        auto ja = cmat.ja[row];
-        auto ma = cmat.ma[row];
-
-        for (intT nz = 0; nz < degree; nz++)
-        {
-
-            DataT weight = ma[nz];
-            if (filter(weight, weight_sum, degree, alpha))
-            {
-                //flag elements for removal
-                ja[nz] = -1;
-                ma[nz] = -1;
-            }
-
-            //remove flagged elements. Keep order;
-            ja.erase(remove(ja.begin(), ja.end(), -1), ja.end());
-            ma.erase(remove(ma.begin(), ma.end(), -1), ma.end());
-        }
-    }
-}
-
 bool filter(DataT weight, DataT total_weight, intT degree, const DataT alpha)
 {
     DataT p = (1. - (weight / total_weight)) ^ (degree - 1);
@@ -239,3 +196,46 @@ struct CSR {
         outfile.close()
     }
 };
+
+
+
+int disparity_filter(CSR& cmat, DataT alpha)
+{
+    //NON negative weights only
+
+    //GENERATE THE VECTOR OF SUMS
+    std::vector<DataT> weight_sums(cmat.rows(), 0.0);
+    for (intT i = 0; i < cmat.rows(); i++)
+    {
+        for (auto w : cmat.ma[i])
+        {
+            weight_sums[i] += w;
+        }
+    }
+
+
+    //APPLY FILTER
+    for (intT row = 0; row < cmat.rows(); row++)
+    {
+        intT degree = cmat.nzcount(row);
+        auto weight_sum = weight_sums[row];
+        auto ja = cmat.ja[row];
+        auto ma = cmat.ma[row];
+
+        for (intT nz = 0; nz < degree; nz++)
+        {
+
+            DataT weight = ma[nz];
+            if (filter(weight, weight_sum, degree, alpha))
+            {
+                //flag elements for removal
+                ja[nz] = -1;
+                ma[nz] = -1;
+            }
+
+            //remove flagged elements. Keep order;
+            ja.erase(remove(ja.begin(), ja.end(), -1), ja.end());
+            ma.erase(remove(ma.begin(), ma.end(), -1), ma.end());
+        }
+    }
+}
