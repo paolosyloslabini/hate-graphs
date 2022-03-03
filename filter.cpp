@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     //terminal options loop
     opterr = 0;
     char c;
-    while ((c = getopt(argc, argv, "f:o")) != -1)
+    while ((c = getopt(argc, argv, "a:f:o")) != -1)
         switch (c)
         {
         case 'a':// select filter alpha
