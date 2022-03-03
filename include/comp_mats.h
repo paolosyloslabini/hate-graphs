@@ -5,6 +5,9 @@ typedef long int intT;
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <vector>
+
 
 
 struct CSR {
@@ -17,9 +20,9 @@ struct CSR {
         return ja.size()
     }
 
-    intT nzcount(i)
+    intT nzcount(intT row)
     {
-        return ja[i].size();
+        return ja[row].size();
     }
 
     intT add_element(intT row, intT col, DataT val = 1)
