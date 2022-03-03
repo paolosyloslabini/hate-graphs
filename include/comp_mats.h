@@ -30,7 +30,7 @@ bool filter(DataT weight, DataT total_weight, intT degree, const DataT alpha)
     //true if not removed;
 
     DataT p = std::pow(1. - (weight / total_weight), (degree - 1));
-    std::cout << p << " " << p < alpha << std::endl;
+    std::cout << p << " " << (p < alpha) << std::endl;
     return p < alpha;
 }
 
