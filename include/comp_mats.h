@@ -286,13 +286,13 @@ int renumber_bipartite(std::string infile, std::string outfile, std::string mapp
 
         //find parent node
         std::string first_node_string = temp.substr(0, del_pos); //retrieve the part of the string before the delimiter
-        current_node = stoi(first_node_string);
+        current_node = first_node_string;
         temp.erase(0, del_pos + del_size);
 
         //find child node
         del_pos = temp.find(",");
         std::string second_node_string = temp.substr(0, del_pos); //retrieve the part of the string after the delimiter
-        intT child = stoi(second_node_string);
+        intT child = second_node_string;
 
         auto it = in_map.find(parent);
         if (it == in_map.end())
