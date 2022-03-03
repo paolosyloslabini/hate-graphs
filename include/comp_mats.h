@@ -27,7 +27,10 @@ intT insert_sorted(std::vector<T>& vec, T const& item)
 
 bool filter(DataT weight, DataT total_weight, intT degree, const DataT alpha)
 {
+    //true if not removed;
+
     DataT p = std::pow(1. - (weight / total_weight), (degree - 1));
+    std::cout << p << " " << p < alpha << std::endl;
     return p < alpha;
 }
 
@@ -228,7 +231,7 @@ int disparity_filter(CSR& cmat, DataT alpha)
         {
 
             DataT weight = ma[nz];
-            if (filter(weight, weight_sum, degree, alpha))
+            if (!filter(weight, weight_sum, degree, alpha))
             {
                 //flag elements for removal
                 ja[nz] = -1;

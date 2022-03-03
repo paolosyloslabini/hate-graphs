@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
         switch (c)
         {
         case 'a':// select filter alpha
-            infile = stof(optarg);
+            alpha = stof(optarg);
             break;
 
         case 'f':// select input file
