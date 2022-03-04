@@ -261,7 +261,7 @@ int save_map(std::map<std::string, intT> map, std::string outfile, std::string d
     }
 }
 
-
+/*
 int renumber_bipartite(std::string infile, std::string outfile, std::string mapping1, std::string mapping2)
 {
 
@@ -362,3 +362,5 @@ int bipartite_to_weighted(std::string infile, std::string outfile)
     }
 
 }
+
+*/
