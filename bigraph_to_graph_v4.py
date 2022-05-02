@@ -12,6 +12,9 @@ import re
 import pickle
 import os
 import bisect
+from collections import Counter, defaultdict
+
+
 
 def find_in_sorted_list(elem, sorted_list):
     # https://docs.python.org/3/library/bisect.html
@@ -50,9 +53,6 @@ if load == False:
         firstline = infile.readline()
         for line in infile.readlines():
             i += 1;   
-            
-            if i > 1000000:
-                break
             linesplit = line.split(",")
             source = re.escape(linesplit[0])
             target = re.escape(linesplit[1])
@@ -93,6 +93,10 @@ else:
         graph = pickle.load(infile)
 
 
+exit()
+
+start = timer()
+
 for count, source in enumerate(graph):
     if count%100 == 0: 
         print("analyzed group", count)
@@ -118,8 +122,12 @@ for count, source in enumerate(graph):
             else:
                 target_neigh[n1] += 1
 
-print("graph trasnformed")
+print("graph trasnformed in", end-start, "seconds")
+
 graph = {}
+
+
+start = timer()
 
 for s, neigh in list(bigraph.items()):
     tmp_dict = {}
@@ -131,7 +139,9 @@ for s, neigh in list(bigraph.items()):
     else:
         bigraph[s] = tmp_dict
 
-print("graph cleaned")
+end = timer()
+
+print("graph cleaned in", end - start, "seconds")
 
 count = 0;
 new_mapping = {}
