@@ -52,7 +52,10 @@ if load == False:
         j = 0
         firstline = infile.readline()
         for line in infile.readlines():
-            i += 1;   
+            i += 1; 
+            if i > 10000:
+                break
+            
             linesplit = line.split(",")
             source = re.escape(linesplit[0])
             target = re.escape(linesplit[1])
@@ -80,47 +83,61 @@ if load == False:
         keep = [x for x in graph[source] if counter[x] > 1]
         graph[source] = keep
     
-    end = timer()
-    
-    with open("tmp/bigraph.p", "wb") as outfile:
-        pickle.dump(graph, outfile)                   
+    end = timer()               
         
     print("removed 1-edges in ", end - start, "seconds")
     
     
-else:
-    with open("tmp/bigraph.p", "rb+") as infile:
-        graph = pickle.load(infile)
-
-
-exit()
-
+    max_len = 1000
+    current_len = 0
+    file_id = 0
+    tmp_data = []
+    for source,neigh in graph.items():
+        
+        current_len += len(neigh)
+        tmp_data.append(neigh)
+        
+        if current_len > max_len:
+            with open("tmp/bigraph_{file_id}.p", "w") as outfile:
+                pickle.dump(tmp_data, outfile)    
+            current_len = 0
+            tmp_data = []
+            file_id += 1
+            
+            
+            
+#LOAD AND ANALIZE            
 start = timer()
 
-for count, source in enumerate(graph):
-    if count%100 == 0: 
-        print("analyzed group", count)
-    neighbours = graph[source]
-    for i,n1 in enumerate(neighbours):
-        if n1 not in bigraph:
-            bigraph[n1] = {}
-        source_neigh = bigraph[n1]
-        
-        for n2 in neighbours[i+1:]:
-            if n2 not in bigraph:
-                bigraph[n2] = {}
+file_id = 0
+while os.path.exists("tmp/bigraph_{file_id}.p"):
+    
+    with open("tmp/bigraph_{file_id}.p") as infile:
+        chunk = pickle.load(infile)
+        print("analyzed chunk", file_id)
+        file_id += 1
+    for count, source in enumerate(chunk):
+        neighbours = graph[source]
+        for i,n1 in enumerate(neighbours):
+            if n1 not in bigraph:
+                bigraph[n1] = {}
+            source_neigh = bigraph[n1]
             
-            #add n2 to n1 nieghbourood
-            target_neigh = bigraph[n2]
-            if n2 not in source_neigh:
-                source_neigh[n2] = 1
-            else:
-                source_neigh[n2] += 1
-            
-            if n1 not in target_neigh:
-                target_neigh[n1] = 1
-            else:
-                target_neigh[n1] += 1
+            for n2 in neighbours[i+1:]:
+                if n2 not in bigraph:
+                    bigraph[n2] = {}
+                
+                #add n2 to n1 nieghbourood
+                target_neigh = bigraph[n2]
+                if n2 not in source_neigh:
+                    source_neigh[n2] = 1
+                else:
+                    source_neigh[n2] += 1
+                
+                if n1 not in target_neigh:
+                    target_neigh[n1] = 1
+                else:
+                    target_neigh[n1] += 1
 
 print("graph trasnformed in", end-start, "seconds")
 
