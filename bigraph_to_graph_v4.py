@@ -46,8 +46,8 @@ start = timer()
 
 
 
-chunck_size = 5000
-load = True
+chunck_size = 10000
+load = False
 
 if load == False:
     
@@ -58,6 +58,9 @@ if load == False:
         firstline = infile.readline()
         for line in infile.readlines():
             i += 1; 
+            
+            if i > 1000000:
+                break
             linesplit = line.split(",")
             source = re.escape(linesplit[0])
             target = re.escape(linesplit[1])
