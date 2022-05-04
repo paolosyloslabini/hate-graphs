@@ -1,2 +1,4 @@
 
 bipartite_edgelist_en.csv
+tmp/inverse_mapping.p
+tmp/mapping.p

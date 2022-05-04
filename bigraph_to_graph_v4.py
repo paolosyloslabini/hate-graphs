@@ -13,7 +13,7 @@ import pickle
 import os
 import bisect
 from collections import Counter, defaultdict
-
+import numpy as np
 
 
 def find_in_sorted_list(elem, sorted_list):
@@ -36,29 +36,32 @@ mapping_file = "bigraph_map.csv"
 
 graph = {}
 
-bigraph = {}
-
 mapping = {}   
 inverse_mapping = {}
 counter = {}
 
 start = timer()
-load = False
+
+
+
+
+
+chunck_size = 5000
+load = True
 
 if load == False:
     
     with open(input_bigraph) as infile:
         i = 0 
         j = 0
+        last_source = None
         firstline = infile.readline()
         for line in infile.readlines():
             i += 1; 
-            if i > 10000:
-                break
-            
             linesplit = line.split(",")
             source = re.escape(linesplit[0])
             target = re.escape(linesplit[1])
+            
             if target not in mapping:
                 mapping[target] = j
                 inverse_mapping[j] = target
@@ -66,66 +69,126 @@ if load == False:
                 j += 1
             else:
                 counter[mapping[target]] += 1
-                
-            if source not in graph:
+            
+            if source != last_source:
                 graph[source] = []
+                last_source = source
             graph[source].append(mapping[target])
             
     
     end = timer()
     
     sources = len(graph)
-    print("graph read, with ",sources, " sources in ", end - start, " seconds")
+    print(f"graph read, with {sources} sources and {j} different targets in {end - start} seconds")
     
     start = timer()
     
+    
+    #remove things that appear only one time
     for i, source in enumerate(graph):    
         keep = [x for x in graph[source] if counter[x] > 1]
         graph[source] = keep
     
-    end = timer()               
+    end = timer()  
+    
+    
+    for i in list(inverse_mapping):
+        if counter[i] == 1:
+            name = inverse_mapping[i]
+            inverse_mapping.pop(i)
+            mapping.pop(name)
+            
+    tmp_mapping = {}
+    count = 0
+    for name,num in mapping.items():
+        tmp_mapping[num] = count
+        count += 1
+    
+    for source in list(graph):
+        for i, neigh in enumerate(list(graph[source])):
+            graph[source][i] = tmp_mapping[graph[source][i]]
+        graph[source] = np.array(graph[source])
+            
+            
+    inverse_mapping = {}
+    for name in list(mapping):
+        mapping[name] = tmp_mapping[mapping[name]]
+        inverse_mapping[mapping[name]] = name
+    
+    del tmp_mapping 
+            
+    with open(f"tmp/mapping.p", "wb") as outfile:
+                pickle.dump(mapping, outfile)
+    with open(f"tmp/inverse_mapping.p", "wb") as outfile:
+                pickle.dump(inverse_mapping, outfile)
+    
+    del mapping
+    del counter
+    del inverse_mapping
         
     print("removed 1-edges in ", end - start, "seconds")
     
     
-    max_len = 1000
+    
+    file_id = 0
+    while os.path.exists(f"tmp/bigraph_{file_id}.p"):
+        os.remove(f"tmp/bigraph_{file_id}.p")
+        file_id += 1
+    
+    max_len = chunck_size
     current_len = 0
     file_id = 0
     tmp_data = []
     for source,neigh in graph.items():
-        
         current_len += len(neigh)
         tmp_data.append(neigh)
-        
+        with open(f"tmp/bigraph_{file_id}.p", "wb") as outfile:
+            pickle.dump(tmp_data, outfile)    
         if current_len > max_len:
-            with open("tmp/bigraph_{file_id}.p", "w") as outfile:
-                pickle.dump(tmp_data, outfile)    
             current_len = 0
             tmp_data = []
             file_id += 1
             
-            
-            
-#LOAD AND ANALIZE            
-start = timer()
+del graph            
+
+#LOAD AND ANALIZE
+
+with open(f"tmp/mapping.p", "rb") as infile:
+    mapping = pickle.load(infile)
 
 file_id = 0
-while os.path.exists("tmp/bigraph_{file_id}.p"):
+start_0 = timer()
+
+print(f"Found {len(mapping)} different users")
+
+
+count_chunks = 0
+while os.path.exists(f"tmp/bigraph_{count_chunks}.p"):
+    count_chunks += 1
+
+print(f"Graph divided in {count_chunks} chunks \n")
+
+
+bigraph = [{} for n in range(len(mapping))]
+
+for c in range(count_chunks):
     
-    with open("tmp/bigraph_{file_id}.p") as infile:
+    chunck_timer = 0
+    max_time = 0
+    max_elements = 0
+    with open(f"tmp/bigraph_{file_id}.p", "rb") as infile:
         chunk = pickle.load(infile)
-        print("analyzed chunk", file_id)
         file_id += 1
-    for count, source in enumerate(chunk):
-        neighbours = graph[source]
+    
+    print(f"analyzing chunk {file_id -1} out of {count_chunks}, {len(chunk)} neighbouroods")
+    for count, neighbours in enumerate(chunk):
+
+        start = timer() #
+        
         for i,n1 in enumerate(neighbours):
-            if n1 not in bigraph:
-                bigraph[n1] = {}
             source_neigh = bigraph[n1]
             
             for n2 in neighbours[i+1:]:
-                if n2 not in bigraph:
-                    bigraph[n2] = {}
                 
                 #add n2 to n1 nieghbourood
                 target_neigh = bigraph[n2]
@@ -138,40 +201,28 @@ while os.path.exists("tmp/bigraph_{file_id}.p"):
                     target_neigh[n1] = 1
                 else:
                     target_neigh[n1] += 1
+        
+        #
+        end = timer() #
+        
+        
+        #
+        chunck_timer += end - start; #
+        max_time = max(max_time, end-start) #
+        max_elements = max(max_elements, len(neighbours))
+    print(f"************ neighbourood {count},  spent {chunck_timer} seconds, max_neigh_time {max_time}, max_neigh_len {max_elements}")
 
-print("graph trasnformed in", end-start, "seconds")
-
-graph = {}
 
 
-start = timer()
+end_0  = timer()
 
-for s, neigh in list(bigraph.items()):
-    tmp_dict = {}
-    for t, val in list(neigh.items()):
-        if val != 1:
-            tmp_dict[t] = val
-    if len(tmp_dict) == 0:
-        bigraph.pop(s)
-    else:
-        bigraph[s] = tmp_dict
-
-end = timer()
-
+print("graph trasnformed in", end_0 - start_0, "seconds")
 print("graph cleaned in", end - start, "seconds")
 
-count = 0;
-new_mapping = {}
-for s in bigraph:
-    new_mapping[s] = count
-    count += 1
-    
 with open(output_bigraph, "w") as outfile:
-    for source,neigh in bigraph.items():
-        s_n = new_mapping[source]
-        for target in sorted(list(neigh), key = lambda x: new_mapping[x]):
-            val = neigh[target]
-            t_n = new_mapping[target]
+    for s_n,neigh in enumerate(bigraph):
+        for t_n in sorted(list(neigh)):
+            val = neigh[t_n]
             line = str(s_n) + "," + str(t_n) + "," + str(val) + "\n"
             outfile.writelines(line)
             
