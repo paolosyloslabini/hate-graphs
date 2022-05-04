@@ -47,7 +47,7 @@ start = timer()
 
 
 chunck_size = 10000
-load = False
+load = True
 
 if load == False:
     
