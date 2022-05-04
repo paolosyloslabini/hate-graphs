@@ -117,10 +117,9 @@ if load == False:
     
     del tmp_mapping 
             
-    with open(f"tmp/mapping.p", "wb") as outfile:
-                pickle.dump(mapping, outfile)
-    with open(f"tmp/inverse_mapping.p", "wb") as outfile:
-                pickle.dump(inverse_mapping, outfile)
+    with open(mapping_file, "w") as mapfile:
+        for thing,name in mapping.items():
+            mapfile.writelines(str(thing) +","+ str(name) + "\n")
     
     del mapping
     del counter
@@ -153,13 +152,8 @@ del graph
 
 #LOAD AND ANALIZE
 
-with open(f"tmp/mapping.p", "rb") as infile:
-    mapping = pickle.load(infile)
-
 file_id = 0
 start_0 = timer()
-
-print(f"Found {len(mapping)} different users")
 
 
 count_chunks = 0
@@ -169,7 +163,7 @@ while os.path.exists(f"tmp/bigraph_{count_chunks}.p"):
 print(f"Graph divided in {count_chunks} chunks \n")
 
 
-bigraph = [{} for n in range(len(mapping))]
+bigraph = [{} for n in range(1900000)]
 
 for c in range(count_chunks):
     
@@ -228,10 +222,3 @@ with open(output_bigraph, "w") as outfile:
             
 
 print("bigraph saved")
-
-with open(mapping_file, "w") as mapfile:
-    for thing,name in mapping.items():
-        if name in new_mapping:
-            mapfile.writelines(str(thing) +","+ str(new_mapping[name]) + "\n")
-
-print("bigraph map saved")
