@@ -16,20 +16,6 @@ from collections import Counter, defaultdict
 import numpy as np
 
 
-def find_in_sorted_list(elem, sorted_list):
-    # https://docs.python.org/3/library/bisect.html
-    'Locate the leftmost value exactly equal to x'
-    i = bisect.bisect_left(sorted_list, elem)
-    if i != len(sorted_list) and sorted_list[i] == elem:
-        return i
-    return -1
-
-def in_sorted_list(elem, sorted_list):
-    i = bisect.bisect_left(sorted_list, elem)
-    return i != len(sorted_list) and sorted_list[i] == elem
-
-
-
 input_bigraph = "bipartite_edgelist_en.csv"
 output_bigraph = "bigraph_converted.csv"
 mapping_file = "bigraph_map.csv"
