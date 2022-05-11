@@ -163,7 +163,8 @@ for c in range(count_chunks):
     local_bigraph = {}
     start = timer()
     with open(f"tmp/bigraph_{file_id}.p", "rb") as infile:
-        chunk = (np.array(x) for x in pickle.load(infile))
+        chunk = pickle.load(infile)
+        chunk = [np.array(x) for x in chunk]
    
     for count, neighbours in enumerate(chunk):
             for i, n1 in enumerate(neighbours):
@@ -177,7 +178,12 @@ for c in range(count_chunks):
             tmp_neigh = {}
 
             for count, neighbours in enumerate(chunk):
-                if neighbours[np.searchsorted(neighbours,n1)] == n1:
+                
+                
+                #only process when n1 is in the neighbourood
+                idx = np.searchsorted(neighbours,n1)
+                if idx < len(neighbours) and neighbours[idx] == n1:
+                    print(n1, "in neigh", count)
                     for n2 in neighbours:
                         if n1 != n2:
                             if n2 not in tmp_neigh:
@@ -186,7 +192,6 @@ for c in range(count_chunks):
                                 tmp_neigh[n2] += 1
                 
             outfile.writelines(f"{n1} {n2} {val} \n" for n2,val in tmp_neigh.items())
-            print("element", n1, "processed")
     
     end = timer()
     print(f"****spent {end - start} seconds")
