@@ -31,11 +31,11 @@ with open(input_file, "r") as infile:
             n1 = line[0]
             n2 = line[1]
             val = line[2]
+            print(n1, n2, val)
 
 
             if n2 != last_n2 or n1 != last_n1:
                 outfile.write(f"{last_n1} {last_n2} {tmp_val}")
-                print(last_n1, last_n2, tmp_val)
                 last_n2 = n2
                 tmp_val = 0
             if n1 != last_n1:
