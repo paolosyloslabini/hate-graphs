@@ -158,43 +158,36 @@ local_file_id = 0;
 file_id = 0
 for c in range(count_chunks):
     
+    
     #one bigraph for each chunck of neighbouroods
     local_bigraph = {}
-
     start = timer()
     with open(f"tmp/bigraph_{file_id}.p", "rb") as infile:
-        chunk = pickle.load(infile)
+        chunk = (np.array(x) for x in pickle.load(infile))
    
     for count, neighbours in enumerate(chunk):
             for i, n1 in enumerate(neighbours):
                 local_bigraph[n1] = {}
                 
     print("local bigraph created")
-             
-
-    for count, neighbours in enumerate(chunk):
-        print(f"analyzing chunck {count_chunks}, neighbour {count} of {len(neighbours)} elements")
-        
-        for i,n1 in enumerate(neighbours):
-                for n2 in neighbours[i+1:]:
-                    
-                    #check in the smaller dict wether edge n1-n2 exists
-                    if len(local_bigraph[n1]) < len(local_bigraph[n2]):
-                        if n2 not in local_bigraph[n1]:
-                            local_bigraph[n1][n2] = 0
-                            local_bigraph[n2][n1] = 0
-                    else:
-                        if n1 not in local_bigraph[n2]:
-                            local_bigraph[n1][n2] = 0
-                            local_bigraph[n2][n1] = 0
-                    
-                    local_bigraph[n1][n2] += 1
-                    local_bigraph[n2][n1] += 1
-                
-                
+    
     with open(f"tmp/local_bigraph_{file_id}.txt", "w") as outfile:
-        for n1, neigh in local_bigraph.items():
-            outfile.writelines(f"{n1} {n2} {val} \n" for n2,val in local_bigraph[n1].items())
+
+        for n1 in local_bigraph:
+            tmp_neigh = {}
+
+            for count, neighbours in enumerate(chunk):
+                if neighbours[np.searchsorted(neighbours,n1)] == n1:
+                    for n2 in neighbours:
+                        if n1 != n2:
+                            if n2 not in tmp_neigh:
+                                tmp_neigh[n2] = 1
+                            else:
+                                tmp_neigh[n2] += 1
+                
+            outfile.writelines(f"{n1} {n2} {val} \n" for n2,val in tmp_neigh.items())
+            print("element", n1, "processed")
+    
     end = timer()
     print(f"****spent {end - start} seconds")
     file_id +=1
