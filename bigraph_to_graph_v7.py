@@ -172,7 +172,7 @@ for c in range(count_chunks):
     print("local bigraph created")
                 
     for count, neighbours in enumerate(chunk):
-        print(f"analyzing chunck {count_chunks}, neighbour {count}")
+        print(f"analyzing chunck {count_chunks}, neighbour {count} of {len(neighbours)} elements")
         
         for i,n1 in enumerate(neighbours):
                 for n2 in neighbours[i+1:]:
