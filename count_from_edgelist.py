@@ -31,7 +31,6 @@ with open(input_file, "r") as infile:
             n1 = linesplit[0]
             n2 = linesplit[1]
             val = linesplit[2]
-            print(n1, n2, val)
             
             
             if n2 != last_n2 or n1 != last_n1:
