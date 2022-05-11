@@ -22,8 +22,7 @@ with open(input_file, "r") as infile:
     with open(output_bigraph, "w") as outfile:
     
     
-        tmp_n2s = []
-        tmp_vals = []
+        tmp_val = 0
         last_n1 = -1
         last_n2 = -1
         
@@ -32,18 +31,13 @@ with open(input_file, "r") as infile:
             n1 = line[0]
             n2 = line[1]
             val = line[2]
-            
-            if n1 == last_n1:
-                if n2 != last_n2:
-                    tmp_n2s.append(n2)
-                    tmp_vals.append(val)
-                else:
-                    tmp_vals[-1] += val    
-                    
-                    
+
+
+            if n2 != last_n2 or n1 != last_n1:
+                outfile.write(f"{last_n1} {last_n2} {tmp_val}")
+                last_n2 = n2
+                tmp_val = 0
             if n1 != last_n1:
-                outfile.writelines([f"{last_n1} {tmp_n2s[i]} {tmp_vals[i]}" for i in range(len(tmp_vals))])
-                tmp_n2s = []
-                tmp_vals = []
-                last_n1 = -1
-        last_n2 = -1
+                last_n1 = n1
+            
+            tmp_val += val
