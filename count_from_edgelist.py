@@ -15,7 +15,7 @@ from collections import Counter, defaultdict
 import numpy as np
 
 
-input_file = "complete_local_bigraph.txt"
+input_file = "tmp/complete_local_bigraph.txt"
 output_bigraph = "counted_bigraph.txt"
 
 with open(input_file, "r") as infile:
