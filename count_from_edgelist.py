@@ -27,10 +27,10 @@ with open(input_file, "r") as infile:
         last_n2 = -1
         
         for line in infile.readlines():
-            line = line.split(" ")
-            n1 = line[0]
-            n2 = line[1]
-            val = line[2]
+            linesplit = line.split(" ")
+            n1 = linesplit[0]
+            n2 = linesplit[1]
+            val = linesplit[2]
             print(n1, n2, val)
 
 
