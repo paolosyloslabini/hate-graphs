@@ -174,6 +174,7 @@ for c in range(count_chunks):
     
     with open(f"tmp/local_bigraph_{file_id}.txt", "w") as outfile:
 
+        print(len(local_bigraph)**2)
         for n1 in local_bigraph:
             tmp_neigh = {}
 
