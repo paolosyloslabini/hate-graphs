@@ -26,23 +26,19 @@ with open(input_file, "r") as infile:
         last_n1 = -1
         last_n2 = -1
         
-        for line in infile.readlines():
-            i = 0
- 
-"""
-linesplit = line.split(" ")
-n1 = linesplit[0]
-n2 = linesplit[1]
-val = linesplit[2]
-print(n1, n2, val)
-
-
-if n2 != last_n2 or n1 != last_n1:
-    outfile.write(f"{last_n1} {last_n2} {tmp_val}")
-    last_n2 = n2
-    tmp_val = 0
-if n1 != last_n1:
-    last_n1 = n1
-
-tmp_val += val
-"""
+        for line in infile:
+            linesplit = line.split(" ")
+            n1 = linesplit[0]
+            n2 = linesplit[1]
+            val = linesplit[2]
+            print(n1, n2, val)
+            
+            
+            if n2 != last_n2 or n1 != last_n1:
+                outfile.write(f"{last_n1} {last_n2} {tmp_val}")
+                last_n2 = n2
+                tmp_val = 0
+            if n1 != last_n1:
+                last_n1 = n1
+            
+            tmp_val += val
