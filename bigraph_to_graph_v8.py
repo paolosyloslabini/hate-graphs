@@ -183,7 +183,6 @@ for c in range(count_chunks):
                 #only process when n1 is in the neighbourood
                 idx = np.searchsorted(neighbours,n1)
                 if idx < len(neighbours) and neighbours[idx] == n1:
-                    print(n1, "in neigh", count)
                     for n2 in neighbours:
                         if n1 != n2:
                             if n2 not in tmp_neigh:
