@@ -34,7 +34,7 @@ with open(input_file, "r") as infile:
             
             
             if n2 != last_n2 or n1 != last_n1:
-                outfile.write(f"{last_n1} {last_n2} {tmp_val}")
+                outfile.write(f"{last_n1} {last_n2} {tmp_val}\n")
                 last_n2 = n2
                 tmp_val = 0
             if n1 != last_n1:
