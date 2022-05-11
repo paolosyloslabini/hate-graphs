@@ -30,7 +30,7 @@ with open(input_file, "r") as infile:
             linesplit = line.split(" ")
             n1 = linesplit[0]
             n2 = linesplit[1]
-            val = linesplit[2]
+            val = int(linesplit[2])
             
             
             if n2 != last_n2 or n1 != last_n1:
