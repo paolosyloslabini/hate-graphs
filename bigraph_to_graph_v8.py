@@ -13,7 +13,7 @@ import pickle
 import os
 from collections import Counter, defaultdict
 import numpy as np
-
+import argparse 
 
 input_bigraph = "bipartite_edgelist_en.csv"
 output_bigraph = "bigraph_converted.csv"
@@ -27,12 +27,28 @@ counter = {}
 
 start = timer()
 
+parser = argparse.ArgumentParser(description='Transforms a bipartite graph into a collection of weighted graphs')
+parser.add_argument('--load', type=bool, default = True,
+                    help='If true, use edgelist (infile). If false, use precomputed chuncks')
+parser.add_argument('--analyze', type=bool, default = True,
+                    help='False to only produce the chuncks, not the edgelists')
+parser.add_argument('--infile', default = "bipartite_edgelist_en.csv",
+                    help='the file with the original edgelist')
+parser.add_argument('--folder', default = "tmp",
+                    help='where to store the results')
+parser.add_argument('--mapfile', default="bigraph_map.csv", help='the mapping file')
 
+args = parser.parse_args()
 
 
 
 chunck_size = 10000
-load = True
+load = args.load
+analyze = args.analyze
+
+input_bigraph = args.infile
+folder = args.folder
+mapping_file = args.mapfile
 
 if load == False:
     
@@ -115,8 +131,8 @@ if load == False:
     
     
     file_id = 0
-    while os.path.exists(f"tmp/bigraph_{file_id}.p"):
-        os.remove(f"tmp/bigraph_{file_id}.p")
+    while os.path.exists(f"{folder}/bigraph_{file_id}.p"):
+        os.remove(f"{folder}/bigraph_{file_id}.p")
         file_id += 1
     
     max_len = chunck_size
@@ -126,7 +142,7 @@ if load == False:
     for source,neigh in graph.items():
         current_len += len(neigh)
         tmp_data.append(neigh)
-        with open(f"tmp/bigraph_{file_id}.p", "wb") as outfile:
+        with open(f"{folder}/bigraph_{file_id}.p", "wb") as outfile:
             pickle.dump(tmp_data, outfile)    
         if current_len > max_len:
             current_len = 0
@@ -137,62 +153,65 @@ del graph
 
 #LOAD AND ANALIZE
 
-file_id = 0
-start_0 = timer()
 
-
-count_chunks = 0
-while os.path.exists(f"tmp/bigraph_{count_chunks}.p"):
-    count_chunks += 1
-
-print(f"Graph divided in {count_chunks} chunks \n")
-
-
-file_id = 0
-while os.path.exists(f"tmp/local_bigraph_{file_id}.txt"):
-    os.remove(f"tmp/local_bigraph_{file_id}.txt")
-    file_id += 1
-
-
-local_file_id = 0;
-file_id = 0
-for c in range(count_chunks):
+if analyze:
+        
+    file_id = 0
+    start_0 = timer()
     
     
-    #one bigraph for each chunck of neighbouroods
-    local_bigraph = {}
-    start = timer()
-    with open(f"tmp/bigraph_{file_id}.p", "rb") as infile:
-        chunk = pickle.load(infile)
-        chunk = [np.array(x) for x in chunk]
-   
-    for count, neighbours in enumerate(chunk):
-            for i, n1 in enumerate(neighbours):
-                local_bigraph[n1] = {}
-                
-    print("local bigraph created")
+    count_chunks = 0
+    while os.path.exists(f"{folder}/bigraph_{count_chunks}.p"):
+        count_chunks += 1
     
-    with open(f"tmp/local_bigraph_{file_id}.txt", "w") as outfile:
-
-        print(len(local_bigraph)**2)
-        for n1 in local_bigraph:
-            tmp_neigh = {}
-
-            for count, neighbours in enumerate(chunk):
-                
-                
-                #only process when n1 is in the neighbourood
-                idx = np.searchsorted(neighbours,n1)
-                if idx < len(neighbours) and neighbours[idx] == n1:
-                    for n2 in neighbours:
-                        if n1 != n2:
-                            if n2 not in tmp_neigh:
-                                tmp_neigh[n2] = 1
-                            else:
-                                tmp_neigh[n2] += 1
-                
-            outfile.writelines(f"{n1} {n2} {val} \n" for n2,val in tmp_neigh.items())
+    print(f"Graph divided in {count_chunks} chunks \n")
     
-    end = timer()
-    print(f"****spent {end - start} seconds")
-    file_id +=1
+    
+    file_id = 0
+    while os.path.exists(f"{folder}/local_bigraph_{file_id}.txt"):
+        os.remove(f"{folder}/local_bigraph_{file_id}.txt")
+        file_id += 1
+    
+    
+    local_file_id = 0;
+    file_id = 0
+    for c in range(count_chunks):
+        
+        
+        #one bigraph for each chunck of neighbouroods
+        local_bigraph = {}
+        start = timer()
+        with open(f"{folder}/bigraph_{file_id}.p", "rb") as infile:
+            chunk = pickle.load(infile)
+            chunk = [np.array(x) for x in chunk]
+       
+        for count, neighbours in enumerate(chunk):
+                for i, n1 in enumerate(neighbours):
+                    local_bigraph[n1] = {}
+                    
+        print("local bigraph created")
+        
+        with open(f"{folder}/local_bigraph_{file_id}.txt", "w") as outfile:
+    
+            print(len(local_bigraph)**2)
+            for n1 in local_bigraph:
+                tmp_neigh = {}
+    
+                for count, neighbours in enumerate(chunk):
+                    
+                    
+                    #only process when n1 is in the neighbourood
+                    idx = np.searchsorted(neighbours,n1)
+                    if idx < len(neighbours) and neighbours[idx] == n1:
+                        for n2 in neighbours:
+                            if n1 != n2:
+                                if n2 not in tmp_neigh:
+                                    tmp_neigh[n2] = 1
+                                else:
+                                    tmp_neigh[n2] += 1
+                    
+                outfile.writelines(f"{n1} {n2} {val} \n" for n2,val in tmp_neigh.items())
+        
+        end = timer()
+        print(f"****spent {end - start} seconds")
+        file_id +=1
