@@ -23,6 +23,8 @@ def disparity_filter(edgelist_file, filtered_file, alpha = 0.8, delimiter = " ")
         degree = len(weight_list)
         
         for n, w in zip(neigh_list, weight_list):
+            print(weight_list)
+            print(neigh_list)
             p = (1. - 1.*w/total_weight)**(degree - 1);
             if p < alpha:
                 outline = str(last_visited) + delimiter + str(n) + delimiter + str(w) + "\n"
