@@ -43,8 +43,8 @@ args = parser.parse_args()
 
 
 chunck_size = 10000
-load = args.load
-analyze = args.analyze
+load = bool(args.load)
+analyze = bool(args.analyze)
 
 input_bigraph = args.infile
 folder = args.folder
