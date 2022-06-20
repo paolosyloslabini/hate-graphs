@@ -9,6 +9,7 @@ Created on Tue Feb 22 15:14:55 2022
 import argparse
 import os
 import numpy as np
+import argparse
 
 
 
@@ -27,8 +28,8 @@ def disparity_filter(edgelist_file, filtered_file, alpha = 0.8, delimiter = " ")
                 outline = str(last_visited) + delimiter + str(n) + delimiter + str(w) + "\n"
                 outfile.writeline(outline)
     
-    with open(edgelist_file) as infile:
-        with open(filtered_file) as outfile:
+    with open(edgelist_file, "r") as infile:
+        with open(filtered_file, "w") as outfile:
             for line in infile:
                 
                 linesplit = line.split(delimiter)
@@ -55,3 +56,19 @@ def disparity_filter(edgelist_file, filtered_file, alpha = 0.8, delimiter = " ")
                 
             #print last stored node
             print_filtered()
+            
+            
+
+
+parser = argparse.ArgumentParser(description='Save disparity filtered input to output')
+parser.add_argument('--alpha', type=float, default = 0.8,
+                    help='filter threshold')
+parser.add_argument('--infile', default = "counted_bigraph.txt",
+                    help='the file with the original (weighted) edgelist')
+parser.add_argument('--outfile', default = "filtered_bigraph.txt",
+                    help='the file to store the filtered edgelist')
+parser.add_argument('--delimiter', default=" ", help='the edegelist delimiter')
+
+args = parser.parse_args()
+
+disparity_filter(args.infile, args.outfile, args.delimiter, args.alpha)
