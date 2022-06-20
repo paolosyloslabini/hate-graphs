@@ -71,4 +71,4 @@ parser.add_argument('--delimiter', default=" ", help='the edegelist delimiter')
 
 args = parser.parse_args()
 
-disparity_filter(args.infile, args.outfile, args.delimiter, args.alpha)
+disparity_filter(args.infile, args.outfile, args.alpha, args.delimiter)
