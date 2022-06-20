@@ -28,9 +28,9 @@ counter = {}
 start = timer()
 
 parser = argparse.ArgumentParser(description='Transforms a bipartite graph into a collection of weighted graphs')
-parser.add_argument('--load', type=bool, default = True,
+parser.add_argument('--load', type=str, default = True,
                     help='If true, use edgelist (infile). If false, use precomputed chuncks')
-parser.add_argument('--analyze', type=bool, default = True,
+parser.add_argument('--analyze', type=str, default = True,
                     help='False to only produce the chuncks, not the edgelists')
 parser.add_argument('--infile', default = "bipartite_edgelist_en.csv",
                     help='the file with the original edgelist')
@@ -43,14 +43,14 @@ args = parser.parse_args()
 
 
 chunck_size = 10000
-load = bool(args.load)
-analyze = bool(args.analyze)
+load = args.load
+analyze = args.analyze
 
 input_bigraph = args.infile
 folder = args.folder
 mapping_file = args.mapfile
 
-if load == False:
+if load == "False":
     
     with open(input_bigraph) as infile:
         i = 0 
@@ -154,7 +154,7 @@ del graph
 #LOAD AND ANALIZE
 
 
-if analyze:
+if analyze == "True":
         
     file_id = 0
     start_0 = timer()
