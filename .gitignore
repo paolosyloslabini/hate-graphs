@@ -9,3 +9,4 @@ bigraph_converted.csv
 tmp/local_bigraph_0.txt
 final_bigraph.txt
 final/mapping.p
+test_symmetrized.txt
