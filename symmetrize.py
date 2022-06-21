@@ -13,7 +13,7 @@ import argparse
 
 
 
-def symmetrize_graph(edgelist_file, simmetrized_file = "test_symmetrized.txt", delimiter = " "):
+def symmetrize_graph(edgelist_file, simmetrized_file, delimiter = " "):
     
     
     #save the offset position of each node in the edgelist
@@ -87,20 +87,14 @@ def symmetrize_graph(edgelist_file, simmetrized_file = "test_symmetrized.txt", d
                 
                 
                 
-symmetrize_graph("test_converted.txt")
-"""
 
 parser = argparse.ArgumentParser(description='Save disparity filtered input to output')
-parser.add_argument('--alpha', type=float, default = 0.8,
-                    help='filter threshold')
 parser.add_argument('--infile', default = "counted_bigraph.txt",
                     help='the file with the original (weighted) edgelist')
-parser.add_argument('--outfile', default = "filtered_bigraph.txt",
+parser.add_argument('--outfile', default = "symmetrized_bigraph.txt",
                     help='the file to store the filtered edgelist')
 parser.add_argument('--delimiter', default=" ", help='the edegelist delimiter')
 
 args = parser.parse_args()
 
-disparity_filter(args.infile, args.outfile, args.alpha, args.delimiter)
-
-"""
+symmetrize_graph(args.infile, args.outfile)
