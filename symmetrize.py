@@ -88,7 +88,7 @@ def symmetrize_graph(edgelist_file, simmetrized_file, delimiter = " "):
                 
 
 parser = argparse.ArgumentParser(description='Save disparity filtered input to output')
-parser.add_argument('--infile', default = "test_converted.txt",
+parser.add_argument('--infile', default = "filtered_bigraph.txt",
                     help='the file with the original (weighted) edgelist')
 parser.add_argument('--outfile', default = "test_symmetrized.txt",
                     help='the file to store the filtered edgelist')
