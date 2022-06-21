@@ -13,7 +13,7 @@ import argparse
 
 
 
-def disparity_filter(edgelist_file, filtered_file, alpha = 0.8, delimiter = " "):
+def disparity_filter(edgelist_file, filtered_file, alpha = 0.05, delimiter = " "):
     last_visited = -1
     neigh_list = []
     weight_list = []
@@ -23,10 +23,12 @@ def disparity_filter(edgelist_file, filtered_file, alpha = 0.8, delimiter = " ")
         degree = len(weight_list)
         
         for n, w in zip(neigh_list, weight_list):
-            p = (1. - 1.*w/total_weight)**(degree - 1);
-            if p < alpha:
+            p = (1. - (1.*w)/total_weight)**(degree - 1);
+            if p <= alpha:
                 outline = str(last_visited) + delimiter + str(n) + delimiter + str(w) + "\n"
                 outfile.writelines(outline)
+            else:
+                print(f"deleted {w}, from degree {degree} and tot {total_weight}")
     
     with open(edgelist_file, "r") as infile:
         with open(filtered_file, "w") as outfile:
