@@ -27,8 +27,6 @@ def disparity_filter(edgelist_file, filtered_file, alpha = 0.05, delimiter = " "
             if p <= alpha:
                 outline = str(last_visited) + delimiter + str(n) + delimiter + str(w) + "\n"
                 outfile.writelines(outline)
-            else:
-                print(f"deleted {w}, from degree {degree} and tot {total_weight}")
     
     with open(edgelist_file, "r") as infile:
         with open(filtered_file, "w") as outfile:
@@ -63,7 +61,7 @@ def disparity_filter(edgelist_file, filtered_file, alpha = 0.05, delimiter = " "
 
 
 parser = argparse.ArgumentParser(description='Save disparity filtered input to output')
-parser.add_argument('--alpha', type=float, default = 0.8,
+parser.add_argument('--alpha', type=float, default = 0.05,
                     help='filter threshold')
 parser.add_argument('--infile', default = "counted_bigraph.txt",
                     help='the file with the original (weighted) edgelist')
